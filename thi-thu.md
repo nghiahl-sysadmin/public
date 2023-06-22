@@ -1,5 +1,5 @@
 1. Create deployment name deploy-nginx, image nginx:1.16 va replica=2 with record version. Then upgrade to version nginx:1.17 with record version. After that roll back to nginx:1.16 version. (20d) 
-2. Backup etcd, dat ten db backup la ten_hoc_vien.db
+2. Backup etcd, dat ten db backup la k8s.db
 3. Given a error deployment. Find and correct errors.
 ```
 apiVersion: apps/v1
