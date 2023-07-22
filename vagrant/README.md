@@ -1,4 +1,4 @@
-#### Các sử dụng Vagrant
+#### Các sử dụng Vagrant cơ bản
 - Lệnh khởi tạo một tệp cấu hình mới cho môi trường ảo "Vagrantfile" tệp chứa cấu hình mà Vagrant sử dụng để tạo và quản lý các máy ảo
 ```
 vagrant init
