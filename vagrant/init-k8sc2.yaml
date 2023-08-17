@@ -9,7 +9,7 @@ bootstrapTokens:
   - authentication
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: 183.81.13.83
+  advertiseAddress: 20.0.0.20
   bindPort: 6443
 nodeRegistration:
   name: k8sc2-master
