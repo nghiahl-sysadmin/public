@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import datetime
 import numpy as np
 import pyautogui
@@ -9,19 +11,23 @@ from PIL import Image, ImageDraw
 import time
 
 class ScreenRecorderApp:
-    # Các phần khởi tạo giao diện
+    # Initialize the user interface components
     def __init__(self, root):
+        # Initialize the main window
         self.root = root
         self.root.title("Screen Recorder")
         self.output_folder = ""
-    
+
+        # Default settings for recording
         self.frame_rate = 24
         self.frame_interval = 1 / self.frame_rate
         self.is_recording = False
         self.start_time = None
 
+        # Set the window size
         self.root.geometry("400x400")
 
+        # Create UI elements
         self.title_label = tk.Label(self.root, text="Screen Recorder", font=("Comic Sans MS", 18, "bold"), bg="lightblue", fg="navy", width= 400)
         self.title_label.pack(pady=10)
         button_width = 15
@@ -53,14 +59,14 @@ class ScreenRecorderApp:
         self.elapsed_time_label = tk.Label(self.root, text="Thời gian đã ghi: 00:00:00", font=("Comic Sans MS", 20, "bold"),fg= "red")
         self.elapsed_time_label.pack(pady=2)
 
-    # Phần chọn thư mục lưu
+    # Method to choose the output folder
     def choose_output_folder(self):
         selected_folder = filedialog.askdirectory()
         if selected_folder:
             self.output_folder = selected_folder
             self.selected_folder_var.set(selected_folder)
 
-    # Phần bắt đầu ghi
+    # Method to start recording
     def start_recording(self):
         if not self.output_folder:
             messagebox.showinfo("Lỗi", "Vui lòng chọn nơi lưu trước khi ghi.")
@@ -75,14 +81,14 @@ class ScreenRecorderApp:
             self.start_time = datetime.datetime.now()
             self.start_recording_thread()
 
-    # Phần dừng ghi
+    # Method to stop recording
     def stop_recording(self):
         self.is_recording = False
         self.start_time = None
         self.stop_button.config(state=tk.DISABLED)
         self.start_button.config(state=tk.NORMAL)
 
-    # Phần bắt đầu luồng ghi
+    # Method to start recording thread
     def start_recording_thread(self):
         self.time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
         self.file_name = f'{self.time_stamp}.mp4'
@@ -95,20 +101,20 @@ class ScreenRecorderApp:
         self.recording_thread = Thread(target=self.record)
         self.recording_thread.start()
 
-    # Tạo hình ảnh hình tròn với viền màu đen và màu vàng
+    # Method to create an image of a circular cursor with black border and yellow color
     def create_cursor_image(self, radius, color):
         cursor_image = Image.new("RGBA", (radius * 2, radius * 2))
         draw = ImageDraw.Draw(cursor_image)
 
-        # Vẽ hình tròn màu đen
+        # Draw a black circular border
         draw.ellipse((0, 0, radius * 2, radius * 2), fill=(0, 0, 0, 128))
-        # Vẽ hình tròn màu vàng trong phần bên trong
+        # Draw a yellow circular shape inside
         inner_radius = radius - 2
         draw.ellipse((2, 2, inner_radius * 2 + 2, inner_radius * 2 + 2), fill=color)
 
         return cursor_image
     
-    # Phần ghi màn hình với trỏ chuột
+    # Method to record the screen with a mouse cursor
     def record(self):
         cursor_radius = 7
         cursor_color = (255, 255, 0, 192)
@@ -144,7 +150,7 @@ class ScreenRecorderApp:
         finally:
             self.video_writer.close()
 
-# Khởi tạo giao diện và ứng dụng
+# Initialize the GUI and the application
 if __name__ == "__main__":
     root = tk.Tk()
     app = ScreenRecorderApp(root)
