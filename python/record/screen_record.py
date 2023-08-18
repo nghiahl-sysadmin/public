@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 import time
 
 class ScreenRecorderApp:
+    # Các phần khởi tạo giao diện
     def __init__(self, root):
         self.root = root
         self.root.title("Screen Recorder")
@@ -52,12 +53,14 @@ class ScreenRecorderApp:
         self.elapsed_time_label = tk.Label(self.root, text="Thời gian đã ghi: 00:00:00", font=("Comic Sans MS", 20, "bold"),fg= "red")
         self.elapsed_time_label.pack(pady=2)
 
+    # Phần chọn thư mục lưu
     def choose_output_folder(self):
         selected_folder = filedialog.askdirectory()
         if selected_folder:
             self.output_folder = selected_folder
             self.selected_folder_var.set(selected_folder)
 
+    # Phần bắt đầu ghi
     def start_recording(self):
         if not self.output_folder:
             messagebox.showinfo("Lỗi", "Vui lòng chọn nơi lưu trước khi ghi.")
@@ -72,12 +75,14 @@ class ScreenRecorderApp:
             self.start_time = datetime.datetime.now()
             self.start_recording_thread()
 
+    # Phần dừng ghi
     def stop_recording(self):
         self.is_recording = False
         self.start_time = None
         self.stop_button.config(state=tk.DISABLED)
         self.start_button.config(state=tk.NORMAL)
 
+    # Phần bắt đầu luồng ghi
     def start_recording_thread(self):
         self.time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
         self.file_name = f'{self.time_stamp}.mp4'
@@ -90,14 +95,20 @@ class ScreenRecorderApp:
         self.recording_thread = Thread(target=self.record)
         self.recording_thread.start()
 
+    # Tạo hình ảnh hình tròn với viền màu đen và màu vàng
     def create_cursor_image(self, radius, color):
         cursor_image = Image.new("RGBA", (radius * 2, radius * 2))
         draw = ImageDraw.Draw(cursor_image)
+
+        # Vẽ hình tròn màu đen
         draw.ellipse((0, 0, radius * 2, radius * 2), fill=(0, 0, 0, 128))
+        # Vẽ hình tròn màu vàng trong phần bên trong
         inner_radius = radius - 2
         draw.ellipse((2, 2, inner_radius * 2 + 2, inner_radius * 2 + 2), fill=color)
+
         return cursor_image
     
+    # Phần ghi màn hình với trỏ chuột
     def record(self):
         cursor_radius = 7
         cursor_color = (255, 255, 0, 192)
@@ -122,7 +133,9 @@ class ScreenRecorderApp:
 
                 if self.start_time:
                     elapsed_time = datetime.datetime.now() - self.start_time
-                    elapsed_time_str = str(elapsed_time).split(".")[0]  # Format the time as HH:MM:SS
+                    hours, remainder = divmod(elapsed_time.seconds, 3600)
+                    minutes, seconds = divmod(remainder, 60)
+                    elapsed_time_str = f"{hours:02}:{minutes:02}:{seconds:02}"
                     self.elapsed_time_label.config(text=f"Thời gian đã ghi: {elapsed_time_str}")
 
         except KeyboardInterrupt:
@@ -131,6 +144,7 @@ class ScreenRecorderApp:
         finally:
             self.video_writer.close()
 
+# Khởi tạo giao diện và ứng dụng
 if __name__ == "__main__":
     root = tk.Tk()
     app = ScreenRecorderApp(root)
