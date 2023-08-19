@@ -25,9 +25,6 @@ class ScreenRecorderApp:
         self.is_recording = False
         self.start_time = None
 
-        # Set the window size
-        self.root.geometry("500x450")
-        
         # Create UI elements
         self.title_label = tk.Label(self.root, text="Screen Recorder", font=("Comic Sans MS", 18, "bold"), bg="lightblue", fg="navy", width= 400)
         self.title_label.pack(pady=10)
@@ -153,4 +150,18 @@ class ScreenRecorderApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = ScreenRecorderApp(root)
+
+    # Set the window size
+    window_width = 500
+    window_height = 450
+    root.geometry(f"{window_width}x{window_height}")
+    root.resizable(False, False)
+
+    # Center the GUI window on the screen
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    x_position = int((screen_width - window_width) / 2)
+    y_position = int((screen_height - window_height) / 2)
+    root.geometry(f"+{x_position}+{y_position}")
+
     root.mainloop()
