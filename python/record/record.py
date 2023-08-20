@@ -17,6 +17,7 @@ class ScreenRecorderApp:
         self.root = root
         self.root.title("Screen Recorder")
         self.output_folder = ""
+        self.recorded_file_label = None
 
         # Default settings for recording
         self.frame_rate = 24
@@ -57,6 +58,13 @@ class ScreenRecorderApp:
         self.elapsed_time_label = tk.Label(self.root, text="Thời gian đã ghi: 00:00:00", font=("Comic Sans MS", 20, "bold"),fg= "red")
         self.elapsed_time_label.pack(pady=2)
 
+    def show_recorded_file_name(self):
+        if self.recorded_file_name:
+            if self.recorded_file_label:
+                self.recorded_file_label.destroy()
+            self.recorded_file_label = tk.Label(self.root, text=f"Tệp đã ghi: {self.recorded_file_name}", font=("Comic Sans MS", 10), wraplength=550)
+            self.recorded_file_label.pack(pady=2)
+
     # Method to choose the output folder
     def choose_output_folder(self):
         selected_folder = filedialog.askdirectory()
@@ -85,11 +93,14 @@ class ScreenRecorderApp:
         self.start_time = None
         self.stop_button.config(state=tk.DISABLED)
         self.start_button.config(state=tk.NORMAL)
+        if self.full_file_path:
+            self.recorded_file_name = f'{self.output_folder}/{self.file_name}'
+            self.show_recorded_file_name()
 
     # Method to start recording thread
     def start_recording_thread(self):
-        self.time_stamp = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
-        self.file_name = f'{self.time_stamp}.mp4'
+        self.time_stamp = datetime.datetime.now().strftime('%H-%M-%S_%d-%m-%Y')
+        self.file_name = f'♥_Video_♥ {self.time_stamp}.mp4'
         self.full_file_path = f'{self.output_folder}\\{self.file_name}'
 
         self.screen_width, self.screen_height = pyautogui.size()
@@ -152,8 +163,8 @@ if __name__ == "__main__":
     app = ScreenRecorderApp(root)
 
     # Set the window size
-    window_width = 500
-    window_height = 450
+    window_width = 600
+    window_height = 500
     root.geometry(f"{window_width}x{window_height}")
     root.resizable(False, False)
 
