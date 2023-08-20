@@ -6,7 +6,7 @@ import pyautogui
 import imageio
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from threading import Thread
+from threading import Thread, Semaphore
 from PIL import Image, ImageDraw
 import time
 
@@ -18,7 +18,8 @@ class ScreenRecorderApp:
         self.root.title("Screen Recorder")
         self.output_folder = ""
         self.recorded_file_label = None
-
+        self.recording_semaphore = Semaphore(1)
+        
         # Default settings for recording
         self.frame_rate = 24
         self.frame_interval = 1 / self.frame_rate # Frame interval calculated based on frame rate
@@ -90,12 +91,8 @@ class ScreenRecorderApp:
     # Method to stop recording
     def stop_recording(self):
         self.is_recording = False
-        self.start_time = None
         self.stop_button.config(state=tk.DISABLED)
         self.start_button.config(state=tk.NORMAL)
-        if self.full_file_path:
-            self.recorded_file_name = f'{self.output_folder}/{self.file_name}'
-            self.show_recorded_file_name()
 
     # Method to start recording thread
     def start_recording_thread(self):
@@ -120,23 +117,27 @@ class ScreenRecorderApp:
 
     def display_mouse_cursor(self):
         while self.is_recording:
-            start_time = datetime.datetime.now()
-            cursor_position = pyautogui.position()
-            screenshot = pyautogui.screenshot(region=(0, 0, self.screen_width, self.screen_height))
+            self.recording_semaphore.acquire()
+            try:
+                start_time = datetime.datetime.now()
 
-            cursor_image = Image.new('RGBA', (12, 12), (255, 255, 0, 255))  # Create a transparent image for the cursor
-            draw = ImageDraw.Draw(cursor_image)
-            draw.rectangle([(0, 0), (11, 11)], outline=(0, 0, 0, 255))  # Draw a black border for the cursor
+                cursor_position = pyautogui.position()
+                screenshot = pyautogui.screenshot(region=(0, 0, self.screen_width, self.screen_height))
+                cursor_image = Image.new('RGBA', (12, 12), (255, 255, 0, 255))  # Create a transparent image for the cursor
+                draw = ImageDraw.Draw(cursor_image)
+                draw.rectangle([(0, 0), (11, 11)], outline=(0, 0, 0, 255))  # Draw a black border for the cursor
 
-            screenshot.paste(cursor_image, cursor_position, cursor_image)  # Paste the cursor image onto the screenshot
+                screenshot.paste(cursor_image, cursor_position, cursor_image)  # Paste the cursor image onto the screenshot
 
-            img_np = np.array(screenshot)
-            self.video_writer.append_data(img_np)
-            end_time = datetime.datetime.now()
-            frame_duration = end_time - start_time
-            sleep_time = max(0, self.frame_interval - frame_duration.total_seconds())
+                img_np = np.array(screenshot)
+                self.video_writer.append_data(img_np)
 
-            time.sleep(sleep_time)
+                end_time = datetime.datetime.now()
+                frame_duration = end_time - start_time
+                sleep_time = max(0, self.frame_interval - frame_duration.total_seconds())
+                time.sleep(sleep_time)  
+            finally:
+                self.recording_semaphore.release()
 
             if self.start_time:
                     elapsed_time = datetime.datetime.now() - self.start_time
