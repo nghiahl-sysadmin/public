@@ -110,6 +110,7 @@ class ScreenRecorderApp:
             ffmpeg_params=[
                 '-preset', 'medium',
                 '-crf', '18',
+                '-b:v', '10M',
                 ]
         )
         self.recording_thread = Thread(target=self.record)
