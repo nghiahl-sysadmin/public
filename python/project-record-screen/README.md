@@ -1,5 +1,5 @@
 ## Python 3.11.4
 ### Install module
 ```
-pip install numpy pyautogui imageio pillow
+pip install numpy pyautogui imageio pillow imageio[ffmpeg] imageio[pyav]
 ```
